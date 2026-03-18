@@ -1,13 +1,21 @@
 package com.example.candiflow.service;
 
+import com.example.candiflow.dto.ApplicationPageResponseDTO;
 import com.example.candiflow.dto.ApplicationRequestDTO;
 import com.example.candiflow.dto.ApplicationResponseDTO;
 import com.example.candiflow.entity.Application;
 import com.example.candiflow.entity.User;
+import com.example.candiflow.enums.ApplicationStatus;
 import com.example.candiflow.exception.ApplicationException;
 import com.example.candiflow.repository.ApplicationRepository;
 import com.example.candiflow.repository.UserRepository;
+import com.example.candiflow.specification.ApplicationSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -52,12 +60,30 @@ public class ApplicationService {
         return toDTO(applicationRepository.save(app));
     }
 
-    public List<ApplicationResponseDTO> getAll(String email) {
+    public ApplicationPageResponseDTO getAll(String email, ApplicationStatus status, String company, int page, int size) {
         User user = getUser(email);
-        return applicationRepository.findAllByUserId(user.getId())
-                .stream()
-                .map(this::toDTO)
-                .toList();
+
+        Specification<Application> spec = Specification
+                .where(ApplicationSpecification.hasUserId(user.getId()));
+
+        if (status != null) {
+            spec = spec.and(ApplicationSpecification.hasStatus(status));
+        }
+
+        if (company != null && !company.isBlank()) {
+            spec = spec.and(ApplicationSpecification.hasCompany(company));
+        }
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("appliedAt").descending());
+        Page<Application> result = applicationRepository.findAll(spec, pageable);
+
+        return new ApplicationPageResponseDTO(
+                result.getContent().stream().map(this::toDTO).toList(),
+                result.getNumber(),
+                result.getSize(),
+                result.getTotalElements(),
+                result.getTotalPages()
+        );
     }
 
     public ApplicationResponseDTO getById(Long id, String email) {
