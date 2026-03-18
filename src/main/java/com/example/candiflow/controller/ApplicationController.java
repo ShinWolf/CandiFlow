@@ -1,14 +1,14 @@
 package com.example.candiflow.controller;
 
+import com.example.candiflow.dto.ApplicationPageResponseDTO;
 import com.example.candiflow.dto.ApplicationRequestDTO;
 import com.example.candiflow.dto.ApplicationResponseDTO;
+import com.example.candiflow.enums.ApplicationStatus;
 import com.example.candiflow.service.ApplicationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/applications")
@@ -25,8 +25,15 @@ public class ApplicationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ApplicationResponseDTO>> getAll(Authentication authentication) {
-        return ResponseEntity.ok(applicationService.getAll(authentication.getName()));
+    public ResponseEntity<ApplicationPageResponseDTO> getAll(
+            @RequestParam(required = false) ApplicationStatus status,
+            @RequestParam(required = false) String company,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Authentication authentication) {
+        return ResponseEntity.ok(
+                applicationService.getAll(authentication.getName(), status, company, page, size)
+        );
     }
 
     @GetMapping("/{id}")
