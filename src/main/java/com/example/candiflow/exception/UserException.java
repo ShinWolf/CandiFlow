@@ -11,4 +11,11 @@ public class UserException extends RuntimeException {
             super("L'adresse email '" + email + "' est déjà utilisée.");
         }
     }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public static class UserNotFoundException extends RuntimeException {
+        public UserNotFoundException(String userNotFound) {
+            super("User not found: " + userNotFound);
+        }
+    }
 }
