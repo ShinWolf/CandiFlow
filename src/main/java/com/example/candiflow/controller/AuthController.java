@@ -1,5 +1,7 @@
 package com.example.candiflow.controller;
 
+import com.example.candiflow.dto.AuthResponseDTO;
+import com.example.candiflow.dto.LoginRequestDTO;
 import com.example.candiflow.dto.RegisterRequestDTO;
 import com.example.candiflow.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -19,5 +21,10 @@ public class AuthController {
     public ResponseEntity<Void> register(@RequestBody RegisterRequestDTO request){
         authService.register(request);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginRequestDTO request) {
+        return ResponseEntity.ok(authService.login(request));
     }
 }
