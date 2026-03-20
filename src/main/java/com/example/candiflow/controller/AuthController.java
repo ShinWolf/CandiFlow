@@ -4,6 +4,7 @@ import com.example.candiflow.dto.AuthResponseDTO;
 import com.example.candiflow.dto.LoginRequestDTO;
 import com.example.candiflow.dto.RegisterRequestDTO;
 import com.example.candiflow.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,13 +16,13 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody RegisterRequestDTO request){
+    public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequestDTO request){
         authService.register(request);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginRequestDTO request) {
+    public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
         return ResponseEntity.ok(authService.login(request));
     }
 }
