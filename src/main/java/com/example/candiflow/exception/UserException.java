@@ -18,4 +18,16 @@ public class UserException extends RuntimeException {
             super("User not found: " + userNotFound);
         }
     }
+
+    public static class UsernameAlreadyUsedException extends RuntimeException {
+        public UsernameAlreadyUsedException(String message) {
+            super(message);
+        }
+    }
+
+    public static class InvalidPasswordException extends RuntimeException {
+        public InvalidPasswordException(String message) {
+            super(message);
+        }
+    }
 }
