@@ -22,18 +22,23 @@ public class AuthService {
     private final JwtService jwtService;
 
     public void register(RegisterRequestDTO request) {
-
-        if(userRepository.findByEmail(request.getEmail()).isPresent()){
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new UserException.EmailAlreadyUsedException("Email already used");
         }
 
+        if (request.getUsername() != null && userRepository.findByUsername(request.getUsername()).isPresent()) {
+            throw new UserException.UsernameAlreadyUsedException("Pseudo déjà utilisé");
+        }
+
         User user = new User();
+        user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.USER);
 
         userRepository.save(user);
     }
+
 
     public AuthResponseDTO login(LoginRequestDTO request) {
 
