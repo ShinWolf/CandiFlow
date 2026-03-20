@@ -70,4 +70,22 @@ public class GlobalExceptionHandler {
                 "timestamp", LocalDateTime.now().toString()
         ));
     }
+
+    @ExceptionHandler(UserException.UsernameAlreadyUsedException.class)
+    public ResponseEntity<Map<String, Object>> handleUsernameAlreadyUsed(UserException.UsernameAlreadyUsedException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                "status", 409,
+                "error", ex.getMessage(),
+                "timestamp", LocalDateTime.now().toString()
+        ));
+    }
+
+    @ExceptionHandler(UserException.InvalidPasswordException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidPassword(UserException.InvalidPasswordException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                "status", 400,
+                "error", ex.getMessage(),
+                "timestamp", LocalDateTime.now().toString()
+        ));
+    }
 }

@@ -10,6 +10,9 @@ import lombok.Setter;
 @Setter
 public class RegisterRequestDTO {
 
+    @Size(min = 3, max = 30, message = "Le pseudo doit contenir entre 3 et 30 caractères")
+    private String username;
+
     @NotBlank(message = "L'email est obligatoire")
     @Email(message = "L'email n'est pas valide")
     private String email;
