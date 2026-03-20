@@ -1,0 +1,34 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: candiflow-postgres
+    environment:
+      POSTGRES_DB: candiflowdb
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./src/main/resources/db/migration/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - candiflow-network
+    restart: unless-stopped
+
+  backend:
+    build: .
+    container_name: candiflow-backend
+    env_file:
+      - .env.prod
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - candiflow-network
+    restart: unless-stopped
+
+networks:
+  candiflow-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

@@ -6,19 +6,18 @@ spring:
     username: postgres
     password: Password7!
     driver-class-name: org.postgresql.Driver
-
-    jpa:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
       hibernate:
-        ddl-auto: validate
-      show-sql: true
-      properties:
-        hibernate:
-          format_sql: true
-          dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
-    sql:
-      init:
-        mode: never
+  sql:
+    init:
+      mode: never
 
     security:
       user:
@@ -30,3 +29,7 @@ spring:
       org.hibernate.SQL: debug
       org.hibernate.type.descriptor.sql.BasicBinder: trace
       org.springframework.security: info
+
+jwt:
+  secret: une-cle-secrete-tres-longue-et-securisee-en-base64-32chars
+  expiration: 86400000
