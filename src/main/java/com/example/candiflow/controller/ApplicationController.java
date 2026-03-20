@@ -5,6 +5,7 @@ import com.example.candiflow.dto.ApplicationRequestDTO;
 import com.example.candiflow.dto.ApplicationResponseDTO;
 import com.example.candiflow.enums.ApplicationStatus;
 import com.example.candiflow.service.ApplicationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -19,6 +20,7 @@ public class ApplicationController {
 
     @PostMapping
     public ResponseEntity<ApplicationResponseDTO> create(
+            @Valid
             @RequestBody ApplicationRequestDTO request,
             Authentication authentication) {
         return ResponseEntity.ok(applicationService.create(request, authentication.getName()));
@@ -45,6 +47,7 @@ public class ApplicationController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ApplicationResponseDTO> update(
+            @Valid
             @PathVariable Long id,
             @RequestBody ApplicationRequestDTO request,
             Authentication authentication) {
