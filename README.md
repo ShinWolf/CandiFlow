@@ -1,31 +1,18 @@
-# CandiFlow
+# CandiFlow — Backend
 
-Application SaaS de gestion de candidatures (Job Tracker) développée en Java 25 / Spring Boot 4.
+API REST pour la gestion de candidatures, développée en Java 25 / Spring Boot 4.
 
 ---
 
 ## Stack technique
 
-**Backend**
 - Java 25
 - Spring Boot 4.0.3
 - Spring Security (JWT)
 - JPA / Hibernate
 - PostgreSQL
-- Tests JUnit 5 + Mockito
 - Docker
-
----
-
-## Fonctionnalités
-
-- Authentification JWT (register / login)
-- Gestion des candidatures (CRUD complet)
-- Statuts : `APPLIED`, `INTERVIEW`, `OFFER`, `REJECTED`
-- Notes personnelles et lien vers l'offre
-- Pagination et filtres dynamiques (statut, entreprise)
-- Isolation des données par utilisateur
-- Tests unitaires (AuthService, JwtService, ApplicationService, ApplicationSpecification)
+- Tests JUnit 5 + Mockito
 
 ---
 
@@ -33,12 +20,11 @@ Application SaaS de gestion de candidatures (Job Tracker) développée en Java 2
 
 - Java 25
 - Maven
-- PostgreSQL
-- Docker (optionnel)
+- Docker + Docker Compose
 
 ---
 
-## Installation
+## Installation locale
 
 ### 1. Cloner le projet
 
@@ -49,31 +35,30 @@ cd CandiFlow
 
 ### 2. Configurer les variables d'environnement
 
-Créer un fichier `application-prod.yml` ou définir les variables suivantes :
+Crée un fichier `application.yml` dans `src/main/resources/` ou utilise celui existant pour le dev.
 
-```bash
-DB_URL=jdbc:postgresql://localhost:5432/candiflowdb
-DB_USERNAME=postgres
-DB_PASSWORD=your_password
-JWT_SECRET=your_secret_key_min_32_chars
+Pour la prod, crée un `.env.prod` à la racine :
+
+```env
+DB_URL=jdbc:postgresql://postgres:5432/candiflowdb
+DB_USERNAME=candiflow
+DB_PASSWORD=ton_mot_de_passe
+JWT_SECRET=ta_cle_secrete_min_32_chars
 JWT_EXPIRATION=86400000
 ```
 
-> Générer une clé JWT sécurisée :
-> ```bash
-> openssl rand -base64 32
-> ```
+> Génère une clé JWT sécurisée : `openssl rand -base64 32`
 
-### 3. Lancer l'application
+### 3. Lancer avec Docker
+
+```bash
+docker compose --env-file .env.prod up --build -d
+```
+
+### 4. Lancer en local sans Docker
 
 ```bash
 ./mvnw spring-boot:run
-```
-
-Ou en production :
-
-```bash
-java -jar candiflow.jar --spring.profiles.active=prod
 ```
 
 ---
@@ -82,15 +67,15 @@ java -jar candiflow.jar --spring.profiles.active=prod
 
 ### Auth
 
-| Méthode | URL | Description | Auth requise |
-|---------|-----|-------------|--------------|
+| Méthode | URL | Description | Auth |
+|---------|-----|-------------|------|
 | `POST` | `/api/auth/register` | Créer un compte | Non |
 | `POST` | `/api/auth/login` | Se connecter, retourne un JWT | Non |
 
 ### Candidatures
 
-| Méthode | URL | Description | Auth requise |
-|---------|-----|-------------|--------------|
+| Méthode | URL | Description | Auth |
+|---------|-----|-------------|------|
 | `POST` | `/api/applications` | Créer une candidature | Oui |
 | `GET` | `/api/applications` | Lister ses candidatures | Oui |
 | `GET` | `/api/applications/{id}` | Détail d'une candidature | Oui |
@@ -99,81 +84,36 @@ java -jar candiflow.jar --spring.profiles.active=prod
 
 ### Paramètres de filtrage (GET /api/applications)
 
-| Paramètre | Type | Description | Exemple |
-|-----------|------|-------------|---------|
-| `page` | int | Numéro de page (défaut: 0) | `?page=0` |
-| `size` | int | Taille de page (défaut: 10) | `?size=5` |
-| `status` | enum | Filtrer par statut | `?status=APPLIED` |
-| `company` | string | Recherche par entreprise | `?company=Google` |
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `page` | int | Numéro de page (défaut: 0) |
+| `size` | int | Taille de page (défaut: 5) |
+| `status` | enum | `APPLIED`, `INTERVIEW`, `OFFER`, `REJECTED` |
+| `company` | string | Recherche par entreprise |
+
+### Profil
+
+| Méthode | URL | Description | Auth |
+|---------|-----|-------------|------|
+| `GET` | `/api/user/profile` | Récupérer son profil | Oui |
+| `PATCH` | `/api/user/profile` | Modifier email / pseudo | Oui |
+| `PATCH` | `/api/user/password` | Modifier le mot de passe | Oui |
+
+### Dashboard
+
+| Méthode | URL | Description | Auth |
+|---------|-----|-------------|------|
+| `GET` | `/api/dashboard/stats` | Stats des candidatures | Oui |
 
 ---
 
 ## Authentification
 
-Toutes les routes `/api/applications/**` nécessitent un token JWT dans le header :
+Toutes les routes sauf `/api/auth/**` nécessitent un token JWT dans le header :
 
 ```
 Authorization: Bearer <token>
 ```
-
----
-
-## Exemples de requêtes
-
-### Register
-
-```json
-POST /api/auth/register
-{
-  "email": "user@candiflow.com",
-  "password": "password123"
-}
-```
-
-### Login
-
-```json
-POST /api/auth/login
-{
-  "email": "user@candiflow.com",
-  "password": "password123"
-}
-```
-
-Réponse :
-```json
-{
-  "token": "eyJhbGciOiJIUzI1NiJ9..."
-}
-```
-
-### Créer une candidature
-
-```json
-POST /api/applications
-{
-  "company": "Google",
-  "jobTitle": "Développeur Full Stack",
-  "status": "APPLIED",
-  "notes": "Candidature envoyée via LinkedIn",
-  "offerUrl": "https://careers.google.com/jobs/123",
-  "appliedAt": "2026-03-18"
-}
-```
-
----
-
-## Configuration production
-
-Points importants avant la mise en prod :
-
-| Paramètre | Dev | Prod |
-|-----------|-----|------|
-| `ddl-auto` | `update` | `validate` |
-| `show-sql` | `true` | `false` |
-| `jwt.secret` | valeur en dur | variable d'environnement |
-| `datasource` | valeur en dur | variables d'environnement |
-| Logging | `debug` | `warn` |
 
 ---
 
@@ -185,22 +125,52 @@ Points importants avant la mise en prod :
 
 ---
 
+## Configuration production
+
+| Paramètre | Dev | Prod |
+|-----------|-----|------|
+| `ddl-auto` | `update` | `validate` |
+| `show-sql` | `true` | `false` |
+| `jwt.secret` | valeur en dur | variable d'environnement |
+| `datasource` | valeur en dur | variables d'environnement |
+| Logging | `debug` | `warn` |
+
+---
+
 ## Structure du projet
 
 ```
 src/
 ├── main/java/com/example/candiflow/
-│   ├── config/          # SecurityConfig
-│   ├── controller/      # AuthController, ApplicationController
-│   ├── dto/             # DTOs requête / réponse
-│   ├── entity/          # User, Application
-│   ├── enums/           # Role, ApplicationStatus
-│   ├── exception/       # UserException, ApplicationException
-│   ├── filter/          # JwtAuthFilter
-│   ├── repository/      # UserRepository, ApplicationRepository
-│   ├── service/         # AuthService, ApplicationService, JwtService, CustomUserDetailsService
-│   └── specification/   # ApplicationSpecification
+│   ├── config/           # SecurityConfig
+│   ├── controller/       # AuthController, ApplicationController, UserController, DashboardController
+│   ├── dto/              # DTOs requête / réponse
+│   ├── entity/           # User, Application
+│   ├── enums/            # Role, ApplicationStatus
+│   ├── exception/        # UserException, ApplicationException, GlobalExceptionHandler
+│   ├── filter/           # JwtAuthFilter
+│   ├── repository/       # UserRepository, ApplicationRepository
+│   ├── service/          # AuthService, ApplicationService, JwtService, UserService, DashboardService
+│   └── specification/    # ApplicationSpecification
 └── test/java/com/example/candiflow/
-    ├── service/         # AuthServiceTest, ApplicationServiceTest, JwtServiceTest
-    └── specification/   # ApplicationSpecificationTest
+    ├── service/          # AuthServiceTest, ApplicationServiceTest, JwtServiceTest
+    └── specification/    # ApplicationSpecificationTest
 ```
+
+---
+
+## Déploiement
+
+Le projet utilise **GitHub Actions** pour le déploiement automatique sur push sur `main`.
+
+### Secrets GitHub requis
+
+| Secret | Description |
+|--------|-------------|
+| `VPS_HOST` | IP du VPS |
+| `VPS_USER` | Utilisateur SSH |
+| `VPS_SSH_KEY` | Clé privée SSH |
+
+### Initialisation de la base de données
+
+Le script `src/main/resources/db/migration/init.sql` est monté automatiquement dans le container PostgreSQL au premier démarrage.
