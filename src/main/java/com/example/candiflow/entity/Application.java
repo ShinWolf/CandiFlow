@@ -28,6 +28,7 @@ public class Application {
     @Column(nullable = false)
     private ApplicationStatus status;
 
+    @Column(length = 2048)
     private String notes;
 
     private String offerUrl;
