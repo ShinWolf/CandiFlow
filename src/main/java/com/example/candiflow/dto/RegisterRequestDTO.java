@@ -2,6 +2,7 @@ package com.example.candiflow.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +11,8 @@ import lombok.Setter;
 @Setter
 public class RegisterRequestDTO {
 
-    @Size(min = 3, max = 30, message = "Le pseudo doit contenir entre 3 et 30 caractères")
+    @Size(max = 30, message = "Le pseudo ne peut pas dépasser 30 caractères")
+    @Pattern(regexp = "^[\\w\\s\\-.]+$", message = "Les emojis et caractères spéciaux ne sont pas autorisés")
     private String username;
 
     @NotBlank(message = "L'email est obligatoire")

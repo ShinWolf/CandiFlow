@@ -14,5 +14,6 @@ CREATE TABLE IF NOT EXISTS applications (
     notes VARCHAR(500),
     offer_url VARCHAR(255),
     applied_at DATE NOT NULL,
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     user_id BIGINT NOT NULL REFERENCES users(id)
 );

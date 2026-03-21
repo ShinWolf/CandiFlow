@@ -72,7 +72,7 @@ public class ApplicationService {
             spec = spec.and(ApplicationSpecification.hasCompany(company));
         }
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("appliedAt").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("updatedAt").descending());
         Page<Application> result = applicationRepository.findAll(spec, pageable);
 
         return new ApplicationPageResponseDTO(
