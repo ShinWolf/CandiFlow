@@ -29,8 +29,11 @@ public class DashboardService {
         long offer    = applicationRepository.count(userSpec.and(ApplicationSpecification.hasStatus(ApplicationStatus.OFFER)));
         long rejected = applicationRepository.count(userSpec.and(ApplicationSpecification.hasStatus(ApplicationStatus.REJECTED)));
 
-        double interviewRate = total > 0 ? Math.round((double) interview / total * 1000.0) / 10.0 : 0;
-        double offerRate     = total > 0 ? Math.round((double) offer / total * 1000.0) / 10.0 : 0;
+        long hadInterview = applicationRepository.count(userSpec.and(ApplicationSpecification.hasHadInterview()));
+        long hadOffer     = applicationRepository.count(userSpec.and(ApplicationSpecification.hasHadOffer()));
+
+        double interviewRate = total > 0 ? Math.round((double) hadInterview / total * 1000.0) / 10.0 : 0;
+        double offerRate     = total > 0 ? Math.round((double) hadOffer / total * 1000.0) / 10.0 : 0;
 
         return new DashboardStatsDTO(total, applied, interview, offer, rejected, interviewRate, offerRate);
     }
