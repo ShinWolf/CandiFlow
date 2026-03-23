@@ -39,6 +39,12 @@ public class Application {
     @Column(nullable = false, columnDefinition = "TIMESTAMP DEFAULT NOW()")
     private LocalDateTime updatedAt;
 
+    @Column(nullable = false)
+    private boolean hasHadInterview = false;
+
+    @Column(nullable = false)
+    private boolean hasHadOffer = false;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

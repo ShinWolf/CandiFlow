@@ -103,6 +103,13 @@ public class ApplicationService {
         app.setOfferUrl(request.getOfferUrl());
         app.setAppliedAt(request.getAppliedAt());
 
+        if (request.getStatus() == ApplicationStatus.INTERVIEW || request.getStatus() == ApplicationStatus.OFFER) {
+            app.setHasHadInterview(true);
+        }
+        if (request.getStatus() == ApplicationStatus.OFFER) {
+            app.setHasHadOffer(true);
+        }
+
         return toDTO(applicationRepository.save(app));
     }
 

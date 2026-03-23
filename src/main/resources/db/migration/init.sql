@@ -12,8 +12,10 @@ CREATE TABLE IF NOT EXISTS applications (
     job_title VARCHAR(100) NOT NULL,
     status VARCHAR(50) NOT NULL,
     notes VARCHAR(500),
-    offer_url VARCHAR(255),
+    offer_url VARCHAR(2048),
     applied_at DATE NOT NULL,
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    has_had_interview BOOLEAN NOT NULL DEFAULT FALSE,
+    has_had_offer BOOLEAN NOT NULL DEFAULT FALSE,
     user_id BIGINT NOT NULL REFERENCES users(id)
 );

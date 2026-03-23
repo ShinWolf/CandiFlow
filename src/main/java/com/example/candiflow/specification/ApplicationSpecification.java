@@ -20,4 +20,12 @@ public class ApplicationSpecification {
         return (root, query, cb) ->
                 cb.like(cb.lower(root.get("company")), "%" + company.trim().toLowerCase() + "%");
     }
+
+    public static Specification<Application> hasHadInterview() {
+        return (root, query, cb) -> cb.isTrue(root.get("hasHadInterview"));
+    }
+
+    public static Specification<Application> hasHadOffer() {
+        return (root, query, cb) -> cb.isTrue(root.get("hasHadOffer"));
+    }
 }
